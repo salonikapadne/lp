@@ -1,0 +1,107 @@
+public class EmailVFController {
+
+    public String toEmail { get; set; }
+    public String subject { get; set; }
+    public String body { get; set; }
+    public Boolean withAttachment { get; set; }
+
+    public String message { get; set; }
+
+    public EmailVFController() {
+        withAttachment = false;
+    }
+
+    // EMAIL VALIDATION METHOD
+    public Boolean isValidEmail(String email) {
+        if(String.isBlank(email)) return false;
+
+        Pattern p = Pattern.compile('^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$');
+        Matcher m = p.matcher(email);
+
+        return m.matches();
+    }
+
+    public void sendEmail() {
+
+        // VALIDATION FIRST
+        if(!isValidEmail(toEmail)) {
+            message = ' Invalid email address entered';
+            return;
+        }
+
+        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+        mail.setToAddresses(new String[] { toEmail });
+        mail.setSubject(subject);
+        mail.setPlainTextBody(body);
+
+        // OPTIONAL ATTACHMENT
+        if(withAttachment == true) {
+            Messaging.EmailFileAttachment att = new Messaging.EmailFileAttachment();
+            att.setFileName('sample.txt');
+            att.setBody(Blob.valueOf('This is attachment content'));
+
+            mail.setFileAttachments(new Messaging.EmailFileAttachment[] { att });
+        }
+
+        try {
+            Messaging.SendEmailResult[] result =
+                Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+
+            if(result[0].isSuccess()) {
+                message = ' Email sent successfully';
+            } else {
+                message = ' Email failed: ' + result[0].getErrors()[0].getMessage();
+            }
+
+        } catch(Exception e) {
+            message = ' Exception: ' + e.getMessage();
+        }
+    }
+}
+
+-------
+<apex:page controller="EmailVFController">
+
+    <apex:form>
+
+        <h2>Email Notification System</h2>
+
+        <!-- EMAIL INPUT -->
+        <apex:outputLabel value="Recipient Email"/>
+        <br/>
+        <apex:inputText value="{!toEmail}"/>
+        <br/><br/>
+
+        <!-- SUBJECT -->
+        <apex:outputLabel value="Subject"/>
+        <br/>
+        <apex:inputText value="{!subject}"/>
+        <br/><br/>
+
+        <!-- BODY -->
+        <apex:outputLabel value="Message"/>
+        <br/>
+        <apex:inputTextarea value="{!body}" rows="5" cols="40"/>
+        <br/><br/>
+
+        <!-- ATTACHMENT -->
+        <apex:inputCheckbox value="{!withAttachment}"/> Attach File
+        <br/><br/>
+
+        <!-- BUTTON -->
+        <apex:commandButton value="Send Email"
+            action="{!sendEmail}"
+            reRender="msg"/>
+
+        <br/><br/>
+
+        <!-- MESSAGE DISPLAY -->
+        <apex:outputPanel id="msg">
+            <h3 style="color:blue;">
+                {!message}
+            </h3>
+        </apex:outputPanel>
+
+    </apex:form>
+
+</apex:page>

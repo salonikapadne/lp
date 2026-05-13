@@ -1,0 +1,242 @@
+public class ProductController {
+
+    public Product__c product { get; set; }
+    public List<Product__c> products { get; set; }
+
+    public String editSerialNo { get; set; }
+
+    public ProductController() {
+
+        product = new Product__c();
+
+        loadProducts();
+    }
+
+    // LOAD
+    public void loadProducts() {
+
+        products = [
+            SELECT Id,
+                   Name,
+                   Serial_no__c,
+                   manufacture_date__c,
+                   expiry_date__c
+            FROM Product__c
+            ORDER BY CreatedDate DESC
+        ];
+    }
+
+    // CREATE + UPDATE
+    public void saveProduct() {
+
+        if(editSerialNo == null) {
+
+            ProductManager.addProduct(
+                product.Serial_no__c,
+                product.Name,
+                product.manufacture_date__c,
+                product.expiry_date__c
+            );
+
+        } else {
+
+            ProductManager.updateProduct(
+                product.Serial_no__c,
+                product.Name
+            );
+        }
+
+        product = new Product__c();
+
+        editSerialNo = null;
+
+        loadProducts();
+    }
+
+    // DELETE
+    public void deleteProduct() {
+
+        String serial = ApexPages.currentPage().getParameters().get('serial');
+
+        ProductManager.deleteProduct(serial);
+
+        loadProducts();
+    }
+
+    // EDIT
+    public void editProduct() {
+
+        String serial = ApexPages.currentPage().getParameters().get('serial');
+
+        List<Product__c> plist = [
+            SELECT Name,
+                   Serial_no__c,
+                   manufacture_date__c,
+                   expiry_date__c
+            FROM Product__c
+            WHERE Serial_no__c = :serial
+            LIMIT 1
+        ];
+
+        if(plist.isEmpty()) {
+
+            System.debug('No product found');
+            return;
+        }
+
+        product = plist[0];
+
+        editSerialNo = serial;
+    }
+
+    // READ
+    public List<Product__c> getProductList() {
+
+        return products;
+    }
+}
+
+
+-------
+
+public class ProductManager {
+
+    public static void addProduct(String id, String name, Date man, Date exp) {
+        Product__c p = new Product__c();
+        
+        p.Serial_no__c = id;
+        p.Name = name;
+        p.manufacture_date__c = man;
+        p.expiry_date__c = exp;
+
+        insert p;
+        System.debug('Added successfully');
+    }
+
+    public static void viewProduct() {
+        List<Product__c> prodlist = [SELECT Serial_no__c,Name,manufacture_date__c,expiry_date__c FROM Product__c];
+
+        if(prodlist.isEmpty()) {
+            System.debug('List is empty');return;
+        }
+
+        for(Product__c p : prodlist) {
+            System.debug(p.Serial_no__c + ' | ' + p.Name + ' | ' + p.manufacture_date__c + ' | ' + p.expiry_date__c);
+        }
+    }
+
+    public static void updateProduct(String id, String newname) {
+        List<Product__c> p = [SELECT Id,Serial_no__c,Name FROM Product__c WHERE Serial_no__c = :id LIMIT 1];
+
+        if(p.isEmpty()) {
+            System.debug('No records');
+            return;
+        }
+
+        Product__c pr = p[0];
+        pr.Name = newname;
+        update pr;
+        System.debug('Updated');
+    }
+
+    public static void deleteProduct(String id) {
+        List<Product__c> plist = [SELECT Id FROM Product__c WHERE Serial_no__c = :id LIMIT 1];
+
+        if(plist.isEmpty()) {
+            System.debug('List is empty');
+            return;
+        }
+
+        delete plist[0];
+        System.debug('Deleted');
+    }
+}
+
+-------
+<apex:page controller="ProductController">
+
+    <apex:form id="form">
+
+        <h2>Product CRUD System</h2>
+
+        <apex:pageBlock title="Product Form">
+
+            <!-- Serial No -->
+            <apex:outputLabel value="Serial No"/>
+            <br/>
+            <apex:inputText value="{!product.Serial_no__c}"/>
+            <br/><br/>
+
+            <!-- Product Name -->
+            <apex:outputLabel value="Product Name"/>
+            <br/>
+            <apex:inputText value="{!product.Name}"/>
+            <br/><br/>
+
+            <!-- Manufacture Date -->
+            <apex:outputLabel value="Manufacture Date"/>
+            <br/>
+            <apex:inputField value="{!product.manufacture_date__c}"/>
+            <br/><br/>
+
+            <!-- Expiry Date -->
+            <apex:outputLabel value="Expiry Date"/>
+            <br/>
+            <apex:inputField value="{!product.expiry_date__c}"/>
+            <br/><br/>
+
+            <apex:commandButton value="Save"
+                action="{!saveProduct}"
+                reRender="table,form"/>
+
+        </apex:pageBlock>
+
+        <br/>
+
+        <!-- TABLE -->
+        <apex:pageBlock id="table" title="Product List">
+
+            <apex:pageBlockTable value="{!productList}" var="p">
+
+                <apex:column value="{!p.Serial_no__c}"/>
+                <apex:column value="{!p.Name}"/>
+                <apex:column value="{!p.manufacture_date__c}"/>
+                <apex:column value="{!p.expiry_date__c}"/>
+
+                <!-- EDIT -->
+                <apex:column headerValue="Edit">
+
+                    <apex:commandLink value="Edit"
+                        action="{!editProduct}"
+                        reRender="form">
+
+                        <apex:param name="serial"
+                            value="{!p.Serial_no__c}"
+                            assignTo="{!ApexPages.currentPage.parameters.serial}"/>
+
+                    </apex:commandLink>
+
+                </apex:column>
+
+                <!-- DELETE -->
+                <apex:column headerValue="Delete">
+
+                    <apex:commandLink value="Delete"
+                        action="{!deleteProduct}"
+                        reRender="table">
+
+                        <apex:param name="serial"
+                            value="{!p.Serial_no__c}"
+                            assignTo="{!ApexPages.currentPage.parameters.serial}"/>
+
+                    </apex:commandLink>
+
+                </apex:column>
+
+            </apex:pageBlockTable>
+
+        </apex:pageBlock>
+
+    </apex:form>
+
+</apex:page>
