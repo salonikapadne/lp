@@ -27,13 +27,14 @@ def update_booking():
             return
     status.config(text="Booking not found")
 
+
 def cancel_booking():
     global bookings
     name = e_name.get().strip()
     bookings = [b for b in bookings if b["name"] != name]
     status.config(text="Booking cancelled (if existed)")
 
-# ---------------- VIEW (MODULAR OUTPUT) ----------------
+
 def view_bookings():
     view_box.delete("1.0", tk.END)   # clears old output ONLY here
 
