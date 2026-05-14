@@ -83,3 +83,9 @@ JWT_SECRET=my_secret_key
 sudo pm2 list
 
 check http://44.226.17.220:3000
+
+
+//if stopped then 
+sudo pm2 start backend
+sudo pm2 start frontend
+sudo pm2 status

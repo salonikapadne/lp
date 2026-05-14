@@ -1,0 +1,25 @@
+# APP ENVIRONMENT VARIABLES (backend)
+PORT=8000
+MONGODB_URL=mongodb+srv://berthutapea:zkZ0tg0H7yiScvO5@cluster0.jwcfbn8.mongodb.net/db_student?retryWrites=true&w=majority
+
+# frontend .env
+PORT=4000
+
+
+add security rules:
+custom tcp-8000
+custom tcp-4000
+
+
+-------
+sudo apt update -y
+sudo apt install git -y
+
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install nodejs -y
+
+git clone https://github.com/salonikapadne/blog.git
+cd blog
+
+ls 
+
