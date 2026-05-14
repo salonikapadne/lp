@@ -1,82 +1,116 @@
-#include <iostream>
 #include <string>
+#include <iostream>
 using namespace std;
 
 int main()
 {
-string name;
-int attendance, task, quality, teamwork, punctuality;
-int totalScore;
-float percentage;
-string performance, suggestion;
+    string name;
+    int attendance, task, teamwork, quality, punctuality;
+    int totalscore;
+    float percentage;
+    string performance, suggestion;
 
-cout << "===== Employee Performance Evaluation Expert System =====\n";
+    cout << "**************EXPERT SYSTEM FOR EMP EVALUATION************\n";
 
-cout << "Enter employee name: ";
-getline(cin, name);
+    cout << "Enter employee name: ";
+    cin >> name;
 
-cout << "Enter attendance score out of 20: ";
-cin >> attendance;
+    // Attendance
+    while (true)
+    {
+        cout << "\nEnter Attendance score out of 20:\n";
+        cin >> attendance;
 
-cout << "Enter task completion score out of 25: ";
-cin >> task;
+        if (attendance >= 0 && attendance <= 20)
+            break;
 
-cout << "Enter work quality score out of 25: ";
-cin >> quality;
+        cout << "Invalid Attendance Score! Enter again.\n";
+    }
 
-cout << "Enter teamwork score out of 15: ";
-cin >> teamwork;
+    // Task
+    while (true)
+    {
+        cout << "\nEnter Task completion score out of 25:\n";
+        cin >> task;
 
-cout << "Enter punctuality score out of 15: ";
-cin >> punctuality;
+        if (task >= 0 && task <= 25)
+            break;
 
-// Validation
-if(attendance < 0 || attendance > 20 ||
-task < 0 || task > 25 ||
-quality < 0 || quality > 25 ||
-teamwork < 0 || teamwork > 15 ||
-punctuality < 0 || punctuality > 15)
-{
-cout << "\nInvalid input entered!";
-return 0;
-}
+        cout << "Invalid Task Score! Enter again.\n";
+    }
 
-totalScore = attendance + task + quality + teamwork + punctuality;
-percentage = (static_cast<float>(totalScore) / 100) * 100;
+    // Quality
+    while (true)
+    {
+        cout << "\nEnter Work quality score out of 25:\n";
+        cin >> quality;
 
-// Expert Rules
-if(totalScore >= 90)
-{
-performance = "Excellent";
-suggestion = "Eligible for promotion or reward.";
-}
-else if(totalScore >= 75)
-{
-performance = "Good";
-suggestion = "Good performance. Keep improving.";
-}
-else if(totalScore >= 60)
-{
-performance = "Average";
-suggestion = "Needs improvement in some areas.";
-}
-else if(totalScore >= 40)
-{
-performance = "Poor";
-suggestion = "Training required.";
-}
-else
-{
-performance = "Very Poor";
-suggestion = "Serious improvement required.";
-}
+        if (quality >= 0 && quality <= 25)
+            break;
 
-cout << "\n===== Evaluation Result =====\n";
-cout << "Employee Name : " << name << endl;
-cout << "Total Score : " << totalScore << "/100" << endl;
-cout << "Percentage : " << percentage << "%" << endl;
-cout << "Performance : " << performance << endl;
-cout << "Suggestion : " << suggestion << endl;
+        cout << "Invalid Quality Score! Enter again.\n";
+    }
 
-return 0;
+    // Teamwork
+    while (true)
+    {
+        cout << "\nEnter Team work score out of 15:\n";
+        cin >> teamwork;
+
+        if (teamwork >= 0 && teamwork <= 15)
+            break;
+
+        cout << "Invalid Teamwork Score! Enter again.\n";
+    }
+
+    // Punctuality
+    while (true)
+    {
+        cout << "\nEnter punctuality score out of 15:\n";
+        cin >> punctuality;
+
+        if (punctuality >= 0 && punctuality <= 15)
+            break;
+
+        cout << "Invalid Punctuality Score! Enter again.\n";
+    }
+
+    totalscore = attendance + task + quality + teamwork + punctuality;
+
+    percentage = totalscore;
+
+    if (totalscore >= 90)
+    {
+        performance = "Excellent";
+        suggestion = "Eligible for reward or bonus";
+    }
+    else if (totalscore >= 75)
+    {
+        performance = "Good";
+        suggestion = "Good performance. Keep improving.";
+    }
+    else if (totalscore >= 60)
+    {
+        performance = "Average";
+        suggestion = "Needs improvement in some areas.";
+    }
+    else if (totalscore >= 40)
+    {
+        performance = "Poor";
+        suggestion = "Training required.";
+    }
+    else
+    {
+        performance = "Very Poor";
+        suggestion = "Serious improvement required.";
+    }
+
+    cout << "\n===== Evaluation Result =====\n";
+    cout << "Employee Name : " << name << endl;
+    cout << "Total Score : " << totalscore << "/100" << endl;
+    cout << "Percentage : " << percentage << "%" << endl;
+    cout << "Performance : " << performance << endl;
+    cout << "Suggestion : " << suggestion << endl;
+
+    return 0;
 }
