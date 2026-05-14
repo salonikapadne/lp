@@ -1,6 +1,10 @@
+Security Group inbound rules:
+Port 22 (SSH)
+Port 80 (HTTP)
+
 cd Downloads
 chmod 400 static.pem
-ssh -i static.pem ubuntu@44.251.39.51
+ssh -i static.pem ubuntu@34.219.104.9
 
 # ============================================
 # UPDATE SERVER
@@ -18,7 +22,7 @@ sudo systemctl enable nginx
 sudo systemctl status nginx
 
 
-now check http://44.251.39.51
+now check http://34.219.104.9
 
 
 cd /var/www/html
@@ -26,4 +30,4 @@ sudo nano index.html
 sudo systemctl restart nginx
 
 
-now check http://44.251.39.51
+now check http://34.219.104.9
