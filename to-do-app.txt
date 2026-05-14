@@ -65,6 +65,9 @@ pm2 save
 pm2 status
 
 -----
+
+cd to-do-app
+
 client env:
 //nano .env
 PORT=3000
