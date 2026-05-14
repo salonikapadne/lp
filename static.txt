@@ -1,0 +1,29 @@
+cd Downloads
+chmod 400 static.pem
+ssh -i static.pem ubuntu@44.251.39.51
+
+# ============================================
+# UPDATE SERVER
+# ============================================
+
+sudo apt update -y
+sudo apt upgrade -y
+
+# INSTALL NGINX
+sudo apt install nginx -y
+
+# START NGINX
+sudo systemctl start nginx
+sudo systemctl enable nginx
+sudo systemctl status nginx
+
+
+now check http://44.251.39.51
+
+
+cd /var/www/html
+sudo nano index.html
+sudo systemctl restart nginx
+
+
+now check http://44.251.39.51
