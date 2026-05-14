@@ -4,6 +4,7 @@ MONGODB_URL=mongodb+srv://berthutapea:zkZ0tg0H7yiScvO5@cluster0.jwcfbn8.mongodb.
 
 # frontend .env
 PORT=4000
+REACT_APP_API=http://52.10.173.52:8000
 
 
 add security rules:
@@ -14,12 +15,36 @@ custom tcp-4000
 -------
 sudo apt update -y
 sudo apt install git -y
-
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install nodejs -y
+
+##verify
+node -v
+npm -v
+
+sudo npm install -g pm2
+
 
 git clone https://github.com/salonikapadne/blog.git
 cd blog
 
-ls 
+cd Backend 
+nano .env
+npm install
+npm run dev
+
+cd Frontend
+npm install
+nano .env 
+npm start
+
+
+sudo pm2 start "HOST=0.0.0.0 PORT=4000 npm start" --name frontend
+sudo pm2 logs frontend
+
+cd ~/blog/Backend
+sudo pm2 start "npm run dev" --name backend
+sudo pm2 logs backend
+
+now open http://52.10.173.52:4000
 

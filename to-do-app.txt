@@ -89,3 +89,5 @@ check http://44.226.17.220:3000
 sudo pm2 start backend
 sudo pm2 start frontend
 sudo pm2 status
+
+
