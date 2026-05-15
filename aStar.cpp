@@ -49,6 +49,9 @@ bool aStar(vector<vector<int>>& grid,pair<int,int> start, pair<int,int> goal){
         if(closed[x][y])continue;
         closed[x][y] = true;
 
+        // Print heuristic at each step
+        cout<<"Exploring: ("<<x<<","<<y<<") | g="<<cur.g<<" h="<<cur.h<<" f="<<cur.f()<<"\n";
+
         if(x==goal.first && y==goal.second){
             cout<<"Result:\n";
             for(auto& p:cur.path){

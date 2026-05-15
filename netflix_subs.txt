@@ -1,0 +1,39 @@
+sudo apt update -y
+sudo apt upgrade -y
+
+sudo apt install git -y
+
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install nodejs -y
+
+sudo npm install -g pm2
+
+git clone https://github.com/salonikapadne/netflix-subscription-manager.git
+cd netflix-subscription-manager
+
+cd backend
+npm install
+nano .env
+--
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_USER=postgres
+DB_PASS=postgres
+DB_NAME=netflix_clone
+PORT=4000
+EMAIL_USER=salonikapadne.pict@gmail.com
+EMAIL_PASS=iypg exov hysu knwu
+EMAIL_SERVICE=gmail
+FRONTEND_URL=http://localhost:3000
+--
+
+sudo pm2 start index.js --name backend
+sudo pm2 save
+sudo pm2 startup systemd -u ubuntu --hp /home/ubuntu
+
+sudo pm2 start npm --name frontend -- start
+sudo pm2 save
+sudo pm2 startup systemd -u ubuntu --hp /home/ubuntu
+
+
+http://54.188.145.141:3000

@@ -41,10 +41,14 @@ npm start
 
 sudo pm2 start "HOST=0.0.0.0 PORT=4000 npm start" --name frontend
 sudo pm2 logs frontend
+sudo pm2 save
+sudo pm2 startup systemd -u ubuntu --hp /home/ubuntu
 
 cd ~/blog/Backend
 sudo pm2 start "npm run dev" --name backend
 sudo pm2 logs backend
+sudo pm2 save 
+sudo pm2 startup systemd -u ubuntu --hp /home/ubuntu
 
 now open http://52.10.173.52:4000
 
