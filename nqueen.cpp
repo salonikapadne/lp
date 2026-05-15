@@ -6,8 +6,18 @@ bool col[50];
 bool diag1[100];
 bool diag2[100];
 bool board[50][50];
+bool canPlaceMore(int row) {
+    int remaining = N - row;
 
+    int freeCols = 0;
+    for (int c = 0; c < N; c++) {
+        if (!col[c]) freeCols++;
+    }
+
+    return freeCols >= remaining;
+}
 void solve(int row){
+    if (!canPlaceMore(row)) return;
     if(row==N){
         cout<<"Solution:\n";
         for(int i=0;i<N;i++){
