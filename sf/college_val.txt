@@ -1,0 +1,265 @@
+code --install-extension salesforce.salesforcedx-vscode
+sf org login web
+//user: seemayogesh72.58092c79b96d@agentforce.com
+sf project generate --name CollegeProject
+cd CollegeProject
+sf lightning generate component --type lwc --name collegeManager --output-dir force-app/main/default/lwc
+
+
+html
+<template>
+
+    <lightning-card title="College Management System">
+
+        <div class="slds-p-around_medium">
+
+            <h1 class="slds-text-heading_medium">Student Details</h1>
+
+            <lightning-input
+                label="Student Name"
+                value={studentName}
+                onchange={handleStudentName}>
+            </lightning-input>
+
+            <lightning-input
+                type="number"
+                label="Roll Number"
+                value={rollNumber}
+                onchange={handleRollNumber}>
+            </lightning-input>
+
+            <lightning-input
+                type="number"
+                label="Marks"
+                value={marks}
+                onchange={handleMarks}>
+            </lightning-input>
+
+            <lightning-input
+                type="email"
+                label="Student Email"
+                value={studentEmail}
+                onchange={handleStudentEmail}>
+            </lightning-input>
+
+            <lightning-button
+                label="Save Student"
+                variant="brand"
+                onclick={saveStudent}>
+            </lightning-button>
+
+            <br/><br/>
+
+            <h1 class="slds-text-heading_medium">Faculty Details</h1>
+
+            <lightning-input
+                label="Faculty Name"
+                value={facultyName}
+                onchange={handleFacultyName}>
+            </lightning-input>
+
+            <lightning-input
+                type="number"
+                label="Faculty ID"
+                value={facultyId}
+                onchange={handleFacultyId}>
+            </lightning-input>
+
+            <lightning-input
+                type="number"
+                label="Salary"
+                value={salary}
+                onchange={handleSalary}>
+            </lightning-input>
+
+            <lightning-combobox
+                label="Department"
+                value={department}
+                options={departmentOptions}
+                onchange={handleDepartment}>
+            </lightning-combobox>
+
+            <lightning-input
+                type="date"
+                label="Joining Date"
+                value={joiningDate}
+                onchange={handleJoiningDate}>
+            </lightning-input>
+
+            <br/>
+
+            <lightning-button
+                label="Save Faculty"
+                variant="success"
+                onclick={saveFaculty}>
+            </lightning-button>
+
+        </div>
+
+    </lightning-card>
+
+</template>
+------
+js
+import { LightningElement } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
+export default class Collegemanager extends LightningElement {
+
+    studentName = '';
+    rollNumber = '';
+    marks = '';
+    studentEmail = '';
+
+    facultyName = '';
+    facultyId = '';
+    salary = '';
+    department = '';
+    joiningDate = '';
+
+    students = [];
+    faculties = [];
+
+    departmentOptions = [
+        { label: 'Computer', value: 'Computer' },
+        { label: 'IT', value: 'IT' },
+        { label: 'Mechanical', value: 'Mechanical' },
+        { label: 'Civil', value: 'Civil' }
+    ];
+
+    handleStudentName(event) {
+        this.studentName = event.detail.value || '';
+    }
+
+    handleRollNumber(event) {
+        this.rollNumber = Number(event.detail.value || 0);
+    }
+
+    handleMarks(event) {
+        this.marks = Number(event.detail.value || 0);
+    }
+
+    handleStudentEmail(event) {
+        this.studentEmail = event.detail.value || '';
+    }
+
+    handleFacultyName(event) {
+        this.facultyName = event.detail.value || '';
+    }
+
+    handleFacultyId(event) {
+        this.facultyId = Number(event.detail.value || 0);
+    }
+
+    handleSalary(event) {
+        this.salary = Number(event.detail.value || 0);
+    }
+
+    handleDepartment(event) {
+        this.department = event.detail.value || '';
+    }
+
+    handleJoiningDate(event) {
+        this.joiningDate = event.detail.value || '';
+    }
+
+    saveStudent() {
+
+        if (!this.studentName) {
+            this.showToast('Error', 'Student Name cannot be blank', 'error');
+            return;
+        }
+
+        if (!this.rollNumber || Number.isNaN(this.rollNumber) || this.rollNumber <= 0) {
+            this.showToast('Error', 'Roll Number must be greater than 0', 'error');
+            return;
+        }
+
+        if (Number.isNaN(this.marks) || this.marks < 0 || this.marks > 100) {
+            this.showToast('Error', 'Marks should be between 0 and 100', 'error');
+            return;
+        }
+
+        if (!this.studentEmail || !this.studentEmail.includes('@')) {
+            this.showToast('Error', 'Email must contain @ symbol', 'error');
+            return;
+        }
+
+        this.showToast('Success', 'Student Record Saved', 'success');
+    }
+
+    saveFaculty() {
+
+        if (!this.facultyName || this.facultyName.trim().length < 3) {
+            this.showToast('Error', 'Faculty Name must contain at least 3 characters', 'error');
+            return;
+        }
+
+        if (!this.facultyId || Number.isNaN(this.facultyId) || this.facultyId <= 0) {
+            this.showToast('Error', 'Faculty ID must be greater than 0', 'error');
+            return;
+        }
+
+        let existingFaculty = this.faculties.find(
+            fac => fac.facultyId == this.facultyId
+        );
+
+        if (existingFaculty) {
+            this.showToast('Error', 'Faculty ID must be unique', 'error');
+            return;
+        }
+
+        if (Number.isNaN(this.salary) || this.salary <= 10000 || this.salary >= 500000) {
+            this.showToast('Error', 'Salary must be between 10,000 and 500,000', 'error');
+            return;
+        }
+
+        if (!this.department) {
+            this.showToast('Error', 'Select Department', 'error');
+            return;
+        }
+
+        let today = new Date();
+        let joinDate = new Date(this.joiningDate);
+
+        if (joinDate > today) {
+            this.showToast('Error', 'Joining Date cannot be future date', 'error');
+            return;
+        }
+
+        this.showToast('Success', 'Faculty Record Saved', 'success');
+    }
+
+    showToast(title, message, variant) {
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title,
+                message,
+                variant
+            })
+        );
+    }
+}
+-------
+<?xml version="1.0" encoding="UTF-8"?>
+
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+
+    <apiVersion>60.0</apiVersion>
+
+    <isExposed>true</isExposed>
+
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+
+</LightningComponentBundle>
+
+-----
+sf project deploy start --target-org "seemayogesh72.58092c79b96d@agentforce.com" --source-dir force-app/main/default --wait 10
+sf alias set myOrg seemayogesh72.58092c79b96d@agentforce.com
+sf project deploy start --target-org myOrg --source-dir force-app/main/default --wait 10
+sf org open --target-org myOrg
+

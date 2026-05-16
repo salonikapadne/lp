@@ -1,0 +1,37 @@
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+sudo npm install -g pm2
+
+cd /home/ubuntu
+git clone https://github.com/salonikapadne/blog1.git
+cd blog1
+
+sudo apt update
+sudo apt install -y gnupg wget
+
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+sudo apt update
+sudo apt install -y mongodb-org
+
+sudo systemctl start mongod
+sudo systemctl enable mongod
+sudo systemctl status mongod
+
+
+cd server
+nano .env                                                                        
+REACT_APP_BASE_URL=http://52.33.197.185:5000
+
+npm install
+npm start 
+
+pm2 serve build 3001 --name blog-client --spa
+
+cd ~/blog1/server
+nano .env
+MONGO_URI = mongodb+srv://salonikapadne_db_user:Seesal%4072@salonikapadne.zkzzlhx.mongodb.net/BlogApp?retryWrites=true&w=majority
+PORT = 5000
+pm2 start npm --name blog-backend -- start

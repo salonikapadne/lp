@@ -1,0 +1,210 @@
+
+public class StudentController {
+
+    public Student__c student { get; set; }
+    public List<Student__c> students { get; set; }
+
+    public String editRollNo { get; set; }
+
+    public StudentController() {
+        student = new Student__c();
+        loadStudents();
+    }
+
+    // LOAD
+    public void loadStudents() {
+        students = [
+            SELECT Id, Name, Roll_No__c, Class__c, Phone__c
+            FROM Student__c
+            ORDER BY CreatedDate DESC
+        ];
+    }
+
+    // CREATE + UPDATE
+    public void saveStudent() {
+
+        if(editRollNo == null) {
+            StudentManager.addStudent(
+                student.Roll_No__c,
+                student.Name,
+                student.Class__c,
+                student.Phone__c
+            );
+        } else {
+            StudentManager.updateStudent(
+            student.Roll_No__c,
+            student.Phone__c
+        );
+        }
+
+        student = new Student__c();
+        editRollNo = null;
+        loadStudents();
+    }
+
+    // DELETE
+    public void deleteStudent() {
+        String roll = ApexPages.currentPage().getParameters().get('roll');
+        StudentManager.deleteStudent(roll);
+        loadStudents();
+    }
+
+    // EDIT (prefill form)
+    public void editStudent() {
+        String roll = ApexPages.currentPage().getParameters().get('roll');
+
+        Student__c s = [
+            SELECT Name, Roll_No__c, Class__c, Phone__c
+            FROM Student__c
+            WHERE Roll_No__c = :roll
+            LIMIT 1
+        ];
+
+        student = s;
+        editRollNo = roll;
+    }
+
+    // READ (if you want controller-managed list)
+    public List<Student__c> getStudentList() {
+        return students;
+    }
+}
+
+-------
+
+public class StudentManager{
+    public static void addStudent(String rollno,String name,String cls,String phn){
+        Student__c s = new Student__c();
+        
+        s.Roll_No__c = rollno;
+        s.Name = name;
+        s.Class__c = cls;
+        s.Phone__c = phn;
+        
+        insert s;
+        System.debug('Added successfully');
+    }
+    
+    public static void viewStudent(){
+       List<Student__c> studlist =[SELECT Roll_No__c,Name,Class__c,Phone__c from Student__c];
+       if(studlist.isEmpty()){System.debug('List is empty');}
+       for(Student__c s:studlist){
+           System.debug(s.Roll_No__c + '|' + s.Name + '|' + s.Class__c + '|' + s.Phone__c);
+       }
+    }
+    
+    public static void updateStudent(String rollNo, String newPhone) {
+
+        List<Student__c> s = [
+            SELECT Id, Phone__c
+            FROM Student__c
+            WHERE Roll_No__c = :rollNo
+            LIMIT 1
+        ];
+    
+        if(s.isEmpty()){
+            System.debug('No records');
+            return;
+        }
+    
+        Student__c st = s[0];
+    
+        st.Phone__c = newPhone;
+    
+        update st;
+    
+        System.debug('Updated');
+    }
+    public static void deleteStudent(String roll){
+        List<Student__c> studlist = [SELECT id,Roll_No__c,Name FROM Student__c where Roll_No__c =: roll LIMIT 1];
+        if(studlist.isEmpty()){System.debug('List is empty');}
+        
+        delete studlist[0];
+        System.debug('Deleted');
+    }
+}
+
+-----
+<apex:page controller="StudentController">
+
+    <apex:form id="form">
+
+        <h2>Student CRUD System</h2>
+
+        <apex:pageBlock title="Student Form">
+
+            <!-- Roll No -->
+            <apex:outputLabel value="Roll No"/>
+            <br/>
+            <apex:inputText value="{!student.Roll_No__c}"/>
+            <br/><br/>
+
+            <!-- Name -->
+            <apex:outputLabel value="Name"/>
+            <br/>
+            <apex:inputText value="{!student.Name}"/>
+            <br/><br/>
+
+            <!-- Class -->
+            <apex:outputLabel value="Class"/>
+            <br/>
+            <apex:inputText value="{!student.Class__c}"/>
+            <br/><br/>
+
+            <!-- Phone -->
+            <apex:outputLabel value="Phone"/>
+            <br/>
+            <apex:inputText value="{!student.Phone__c}"/>
+            <br/><br/>
+
+            <apex:commandButton value="Save"
+                action="{!saveStudent}"
+                reRender="table,form"/>
+
+        </apex:pageBlock>
+
+        <br/>
+
+        <!-- TABLE -->
+        <apex:pageBlock id="table" title="Student List">
+
+            <apex:pageBlockTable value="{!studentList}" var="s">
+
+                <apex:column value="{!s.Roll_No__c}"/>
+                <apex:column value="{!s.Name}"/>
+                <apex:column value="{!s.Class__c}"/>
+                <apex:column value="{!s.Phone__c}"/>
+
+                <!-- EDIT -->
+                <apex:column headerValue="Edit">
+                    <apex:commandLink value="Edit"
+                        action="{!editStudent}"
+                        reRender="form">
+
+                        <apex:param name="roll"
+                            value="{!s.Roll_No__c}"
+                            assignTo="{!ApexPages.currentPage.parameters.roll}"/>
+
+                    </apex:commandLink>
+                </apex:column>
+
+                <!-- DELETE -->
+                <apex:column headerValue="Delete">
+                    <apex:commandLink value="Delete"
+                        action="{!deleteStudent}"
+                        reRender="table">
+
+                        <apex:param name="roll"
+                            value="{!s.Roll_No__c}"
+                            assignTo="{!ApexPages.currentPage.parameters.roll}"/>
+
+                    </apex:commandLink>
+                </apex:column>
+
+            </apex:pageBlockTable>
+
+        </apex:pageBlock>
+
+    </apex:form>
+
+</apex:page>

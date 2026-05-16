@@ -1,0 +1,232 @@
+code --install-extension salesforce.salesforcedx-vscode
+sf org login web
+//user: seemayogesh72.58092c79b96d@agentforce.com
+sf project generate --name employeeProject
+cd employeeProject
+sf lightning generate component --type lwc --name employeeManager --output-dir force-app/main/default/lwc
+
+
+create file empmanager.html
+<template>
+
+    <lightning-card title="Employee Management System">
+
+        <div class="slds-p-around_medium">
+
+            <lightning-input
+                label="Employee Name"
+                value={empName}
+                onchange={handleName}>
+            </lightning-input>
+
+            <lightning-input
+                type="number"
+                label="Employee ID"
+                value={empId}
+                onchange={handleId}>
+            </lightning-input>
+
+            <lightning-input
+                type="number"
+                label="Salary"
+                value={salary}
+                onchange={handleSalary}>
+            </lightning-input>
+
+            <lightning-input
+                type="email"
+                label="Email"
+                value={email}
+                onchange={handleEmail}>
+            </lightning-input>
+
+            <lightning-combobox
+                label="Department"
+                value={department}
+                options={departmentOptions}
+                onchange={handleDepartment}>
+            </lightning-combobox>
+
+            <lightning-input
+                type="date"
+                label="Joining Date"
+                value={joiningDate}
+                onchange={handleJoiningDate}>
+            </lightning-input>
+
+            <br/>
+
+            <lightning-button
+                label="Save Employee"
+                variant="brand"
+                onclick={saveEmployee}>
+            </lightning-button>
+
+        </div>
+
+    </lightning-card>
+
+</template>
+-----
+
+empmanager.js
+import { LightningElement } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
+export default class Empmanager extends LightningElement {
+
+    empName = '';
+    empId = '';
+    salary = '';
+    email = '';
+    department = '';
+    joiningDate = '';
+
+    employeeIds = [];
+
+    departmentOptions = [
+        { label: 'HR', value: 'HR' },
+        { label: 'IT', value: 'IT' },
+        { label: 'Finance', value: 'Finance' },
+        { label: 'Marketing', value: 'Marketing' }
+    ];
+
+    handleName(event) {
+        this.empName = event.target.value;
+    }
+
+    handleId(event) {
+        this.empId = event.target.value;
+    }
+
+    handleSalary(event) {
+        this.salary = event.target.value;
+    }
+
+    handleEmail(event) {
+        this.email = event.target.value;
+    }
+
+    handleDepartment(event) {
+        this.department = event.target.value;
+    }
+
+    handleJoiningDate(event) {
+        this.joiningDate = event.target.value;
+    }
+
+    saveEmployee() {
+
+        if (!this.empName || this.empName.trim().length < 3) {
+            this.showToast(
+                'Error',
+                'Employee Name must contain at least 3 characters',
+                'error'
+            );
+            return;
+        }
+
+        if (this.empId <= 0) {
+            this.showToast(
+                'Error',
+                'Employee ID must be greater than 0',
+                'error'
+            );
+            return;
+        }
+
+        if (this.employeeIds.includes(this.empId)) {
+            this.showToast(
+                'Error',
+                'Employee ID must be unique',
+                'error'
+            );
+            return;
+        }
+
+        if (this.salary <= 10000 || this.salary >= 500000) {
+            this.showToast(
+                'Error',
+                'Salary must be between 10,000 and 500,000',
+                'error'
+            );
+            return;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(this.email)) {
+            this.showToast(
+                'Error',
+                'Invalid Email Format',
+                'error'
+            );
+            return;
+        }
+
+        if (!this.department) {
+            this.showToast(
+                'Error',
+                'Please select a department',
+                'error'
+            );
+            return;
+        }
+
+        let today = new Date();
+        let joinDate = new Date(this.joiningDate);
+
+        if (joinDate > today) {
+            this.showToast(
+                'Error',
+                'Joining Date cannot be future date',
+                'error'
+            );
+            return;
+        }
+
+        this.employeeIds.push(this.empId);
+
+        this.showToast(
+            'Success',
+            'Employee Saved Successfully',
+            'success'
+        );
+    }
+
+    showToast(title, message, variant) {
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title,
+                message,
+                variant
+            })
+        );
+    }
+}
+
+------
+empmanager.js-meta.xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+
+    <apiVersion>60.0</apiVersion>
+
+    <isExposed>true</isExposed>
+
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+
+</LightningComponentBundle>
+
+
+-----
+sf project deploy start --target-org "seemayogesh72.58092c79b96d@agentforce.com" --source-dir force-app/main/default --wait 10
+sf alias set myOrg seemayogesh72.58092c79b96d@agentforce.com
+sf project deploy start --target-org myOrg --source-dir force-app/main/default --wait 10
+sf org open --target-org myOrg
+

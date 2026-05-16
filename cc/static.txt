@@ -1,0 +1,23 @@
+Security Group inbound rules:
+Port 22 (SSH)
+Port 80 (HTTP)
+
+cd Downloads
+chmod 400 static.pem
+ssh -i static.pem ubuntu@34.219.104.9
+
+
+sudo apt update -y
+sudo apt upgrade -y
+
+sudo apt install nginx -y
+
+sudo systemctl start nginx
+sudo systemctl enable nginx
+sudo systemctl status nginx
+
+sudo mkdir /var/www/html/mywebsite
+cd /var/www/html
+sudo nano index.html
+sudo systemctl restart nginx
+
