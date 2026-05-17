@@ -4,7 +4,7 @@ MONGODB_URL=mongodb+srv://berthutapea:zkZ0tg0H7yiScvO5@cluster0.jwcfbn8.mongodb.
 
 # frontend .env
 PORT=4000
-REACT_APP_API=http://52.10.173.52:8000
+=http://52.10.173.52:8000
 
 
 add security rules:
@@ -27,7 +27,7 @@ sudo npm install -g pm2
 cd /home/ubuntu
 git clone https://github.com/salonikapadne/blog.git
 cd blog
-
+REACT_APP_API
 cd Backend 
 nano .env
 npm install
@@ -40,13 +40,11 @@ npm start
 
 
 sudo pm2 start "HOST=0.0.0.0 PORT=4000 npm start" --name frontend
-sudo pm2 logs frontend
 sudo pm2 save
 sudo pm2 startup systemd -u ubuntu --hp /home/ubuntu
 
 cd ~/blog/Backend
 sudo pm2 start "npm run dev" --name backend
-sudo pm2 logs backend
 sudo pm2 save 
 sudo pm2 startup systemd -u ubuntu --hp /home/ubuntu
 
