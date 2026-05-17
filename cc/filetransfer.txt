@@ -1,0 +1,14 @@
+//public ip vm1 - 54.219.172.105
+//private ip vm2 - 172.31.8.211
+
+scp -i vm.pem vm.pem ubuntu@54.219.172.105:/home/ubuntu/
+ssh -i vm.pem ubuntu@54.219.172.105
+ls (u should see pem key)
+chmod 400 vm.pem
+echo "hello from vm1" > test.txt
+scp -i vm.pem test.txt ubuntu@172.31.8.211:/home/ubuntu/
+exit
+
+ssh -i vm.pem ubuntu@54.67.33.26
+ls (you should see test.txt)
+cat test.txt
