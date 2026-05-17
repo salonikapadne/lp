@@ -12,3 +12,6 @@ exit
 ssh -i vm.pem ubuntu@54.67.33.26
 ls (you should see test.txt)
 cat test.txt
+
+
+or just check fromo ec2 of vm2
